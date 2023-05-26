@@ -202,14 +202,14 @@ class _BetterPlayerMaterialControlsState
                   children: [
                     if (_controlsConfiguration.enableBackButton)
                       _buildBackButton(),
-                   Row(
-                     children: [
-                       if (_controlsConfiguration.enablePip)
-                         _buildPipButtonWrapperWidget(
-                             controlsNotVisible, _onPlayerHide),
-                       _buildMoreButton(),
-                     ],
-                   )
+                    Row(
+                      children: [
+                        if (_controlsConfiguration.enablePip)
+                          _buildPipButtonWrapperWidget(
+                              controlsNotVisible, _onPlayerHide),
+                        _buildMoreButton(),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -307,10 +307,7 @@ class _BetterPlayerMaterialControlsState
                   if (_controlsConfiguration.enableMute)
                     _buildMuteButton(_controller),
                   if (_controlsConfiguration.enableFullscreen)
-                    Container(
-                      color: Colors.red,
-                      child: _buildExpandButton(),
-                    ),
+                    _buildExpandButton(),
                 ],
               ),
             ),
