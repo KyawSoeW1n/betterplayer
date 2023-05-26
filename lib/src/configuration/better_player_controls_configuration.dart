@@ -45,6 +45,9 @@ class BetterPlayerControlsConfiguration {
   ///Flag used to enable/disable mute
   final bool enableMute;
 
+  ///Flag used to enable/disable BackButton
+  final bool enableBackButton;
+
   ///Flag used to enable/disable progress texts
   final bool enableProgressText;
 
@@ -174,6 +177,7 @@ class BetterPlayerControlsConfiguration {
     this.skipBackIcon = Icons.replay_10_outlined,
     this.skipForwardIcon = Icons.forward_10_outlined,
     this.enableFullscreen = true,
+    this.enableBackButton = false,
     this.enableMute = true,
     this.enableProgressText = true,
     this.enableProgressBar = true,

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:better_player/src/configuration/better_player_controls_configuration.dart';
 import 'package:better_player/src/controls/better_player_clickable_widget.dart';
 import 'package:better_player/src/controls/better_player_controls_state.dart';
@@ -197,14 +198,18 @@ class _BetterPlayerMaterialControlsState
                 height: _controlsConfiguration.controlBarHeight,
                 width: double.infinity,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if (_controlsConfiguration.enablePip)
-                      _buildPipButtonWrapperWidget(
-                          controlsNotVisible, _onPlayerHide)
-                    else
-                      const SizedBox(),
-                    _buildMoreButton(),
+                    if (_controlsConfiguration.enableBackButton)
+                      _buildBackButton(),
+                   Row(
+                     children: [
+                       if (_controlsConfiguration.enablePip)
+                         _buildPipButtonWrapperWidget(
+                             controlsNotVisible, _onPlayerHide),
+                       _buildMoreButton(),
+                     ],
+                   )
                   ],
                 ),
               ),
@@ -291,9 +296,7 @@ class _BetterPlayerMaterialControlsState
               child: Row(
                 children: [
                   if (_controlsConfiguration.enablePlayPause)
-                    _buildPlayPause(_controller!)
-                  else
-                    const SizedBox(),
+                    _buildPlayPause(_controller!),
                   if (_betterPlayerController!.isLiveStream())
                     _buildLiveWidget()
                   else
@@ -302,13 +305,12 @@ class _BetterPlayerMaterialControlsState
                         : const SizedBox(),
                   const Spacer(),
                   if (_controlsConfiguration.enableMute)
-                    _buildMuteButton(_controller)
-                  else
-                    const SizedBox(),
+                    _buildMuteButton(_controller),
                   if (_controlsConfiguration.enableFullscreen)
-                    _buildExpandButton()
-                  else
-                    const SizedBox(),
+                    Container(
+                      color: Colors.red,
+                      child: _buildExpandButton(),
+                    ),
                 ],
               ),
             ),
@@ -349,6 +351,29 @@ class _BetterPlayerMaterialControlsState
                 _betterPlayerController!.isFullScreen
                     ? _controlsConfiguration.fullscreenDisableIcon
                     : _controlsConfiguration.fullscreenEnableIcon,
+                color: _controlsConfiguration.iconsColor,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackButton() {
+    return Padding(
+      padding: EdgeInsets.only(left: 12.0),
+      child: BetterPlayerMaterialClickableWidget(
+        onTap: () => Navigator.of(context).pop(),
+        child: AnimatedOpacity(
+          opacity: controlsNotVisible ? 0.0 : 1.0,
+          duration: _controlsConfiguration.controlsHideTime,
+          child: Container(
+            height: _controlsConfiguration.controlBarHeight,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Center(
+              child: Icon(
+                Icons.arrow_back,
                 color: _controlsConfiguration.iconsColor,
               ),
             ),

@@ -22,6 +22,7 @@ class _ControlsConfigurationPageState extends State<ControlsConfigurationPage> {
       progressBarHandleColor: Colors.lightGreen,
       enableSkips: false,
       enableFullscreen: false,
+      enableBackButton: true,
       controlBarHeight: 60,
       loadingColor: Colors.red,
       overflowModalColor: Colors.indigo,
@@ -31,9 +32,10 @@ class _ControlsConfigurationPageState extends State<ControlsConfigurationPage> {
 
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
-            aspectRatio: 16 / 9,
-            fit: BoxFit.contain,
-            controlsConfiguration: controlsConfiguration);
+      aspectRatio: 16 / 9,
+      fit: BoxFit.contain,
+      controlsConfiguration: controlsConfiguration,
+    );
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, Constants.elephantDreamVideoUrl);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
@@ -66,7 +68,8 @@ class _ControlsConfigurationPageState extends State<ControlsConfigurationPage> {
               setState(() {
                 _betterPlayerController.setBetterPlayerControlsConfiguration(
                   BetterPlayerControlsConfiguration(
-                      overflowModalColor: Colors.amberAccent),
+                    overflowModalColor: Colors.amberAccent,
+                  ),
                 );
               });
             },
