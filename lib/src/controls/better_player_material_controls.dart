@@ -202,14 +202,14 @@ class _BetterPlayerMaterialControlsState
                   children: [
                     if (_controlsConfiguration.enableBackButton)
                       _buildBackButton(),
-                   Row(
-                     children: [
-                       if (_controlsConfiguration.enablePip)
-                         _buildPipButtonWrapperWidget(
-                             controlsNotVisible, _onPlayerHide),
-                       _buildMoreButton(),
-                     ],
-                   )
+                    Row(
+                      children: [
+                        if (_controlsConfiguration.enablePip)
+                          _buildPipButtonWrapperWidget(
+                              controlsNotVisible, _onPlayerHide),
+                        _buildMoreButton(),
+                      ],
+                    )
                   ],
                 ),
               ),
