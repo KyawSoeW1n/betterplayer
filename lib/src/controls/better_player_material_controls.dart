@@ -307,10 +307,7 @@ class _BetterPlayerMaterialControlsState
                   if (_controlsConfiguration.enableMute)
                     _buildMuteButton(_controller),
                   if (_controlsConfiguration.enableFullscreen)
-                    Container(
-                      color: Colors.red,
-                      child: _buildExpandButton(),
-                    ),
+                    _buildExpandButton(),
                 ],
               ),
             ),
