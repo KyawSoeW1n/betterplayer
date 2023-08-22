@@ -12,56 +12,54 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import com.jhomlala.better_player.DataSourceUtils.getUserAgent
-import com.jhomlala.better_player.DataSourceUtils.isHTTP
-import com.jhomlala.better_player.DataSourceUtils.getDataSourceFactory
-import io.flutter.plugin.common.EventChannel
-import io.flutter.view.TextureRegistry.SurfaceTextureEntry
-import io.flutter.plugin.common.MethodChannel
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import android.support.v4.media.session.MediaSessionCompat
-import com.google.android.exoplayer2.drm.DrmSessionManager
-import androidx.work.WorkManager
-import androidx.work.WorkInfo
-import com.google.android.exoplayer2.drm.HttpMediaDrmCallback
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
-import com.google.android.exoplayer2.drm.FrameworkMediaDrm
-import com.google.android.exoplayer2.drm.UnsupportedDrmException
-import com.google.android.exoplayer2.drm.DummyExoMediaDrm
-import com.google.android.exoplayer2.drm.LocalMediaDrmCallback
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ClippingMediaSource
-import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescriptionAdapter
-import com.google.android.exoplayer2.ui.PlayerNotificationManager.BitmapCallback
-import androidx.work.OneTimeWorkRequest
-import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.Surface
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
-import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
-import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
+import com.google.android.exoplayer2.drm.DrmSessionManager
+import com.google.android.exoplayer2.drm.DrmSessionManagerProvider
+import com.google.android.exoplayer2.drm.DummyExoMediaDrm
+import com.google.android.exoplayer2.drm.FrameworkMediaDrm
+import com.google.android.exoplayer2.drm.HttpMediaDrmCallback
+import com.google.android.exoplayer2.drm.LocalMediaDrmCallback
+import com.google.android.exoplayer2.drm.UnsupportedDrmException
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.source.ClippingMediaSource
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import io.flutter.plugin.common.EventChannel.EventSink
-import androidx.work.Data
-import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.drm.DrmSessionManagerProvider
-import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionOverride
+import com.google.android.exoplayer2.ui.PlayerNotificationManager
+import com.google.android.exoplayer2.ui.PlayerNotificationManager.BitmapCallback
+import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescriptionAdapter
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
+import com.jhomlala.better_player.DataSourceUtils.getDataSourceFactory
+import com.jhomlala.better_player.DataSourceUtils.getUserAgent
+import com.jhomlala.better_player.DataSourceUtils.isHTTP
+import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.EventChannel.EventSink
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.io.File
-import java.lang.Exception
-import java.lang.IllegalStateException
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -405,7 +403,6 @@ internal class BetterPlayer(
         drmSessionManager?.let { drmSessionManager ->
             drmSessionManagerProvider = DrmSessionManagerProvider { drmSessionManager }
         }
-
         return when (type) {
             C.CONTENT_TYPE_SS -> SsMediaSource.Factory(
                 DefaultSsChunkSource.Factory(mediaDataSourceFactory),
@@ -415,6 +412,7 @@ internal class BetterPlayer(
                     setDrmSessionManagerProvider(drmSessionManagerProvider!!)
                 }
             }.createMediaSource(mediaItem)
+
             C.CONTENT_TYPE_DASH -> DashMediaSource.Factory(
                 DefaultDashChunkSource.Factory(mediaDataSourceFactory),
                 DefaultDataSource.Factory(context, mediaDataSourceFactory)
@@ -423,12 +421,14 @@ internal class BetterPlayer(
                     setDrmSessionManagerProvider(drmSessionManagerProvider!!)
                 }
             }.createMediaSource(mediaItem)
+
             C.CONTENT_TYPE_HLS -> HlsMediaSource.Factory(mediaDataSourceFactory)
                 .apply {
                     if (drmSessionManagerProvider != null) {
                         setDrmSessionManagerProvider(drmSessionManagerProvider!!)
                     }
                 }.createMediaSource(mediaItem)
+
             C.CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(
                 mediaDataSourceFactory,
                 DefaultExtractorsFactory()
@@ -437,6 +437,7 @@ internal class BetterPlayer(
                     setDrmSessionManagerProvider(drmSessionManagerProvider!!)
                 }
             }.createMediaSource(mediaItem)
+
             else -> {
                 throw IllegalStateException("Unsupported type: $type")
             }
@@ -468,6 +469,7 @@ internal class BetterPlayer(
                         event["event"] = "bufferingStart"
                         eventSink.success(event)
                     }
+
                     Player.STATE_READY -> {
                         if (!isInitialized) {
                             isInitialized = true
@@ -477,12 +479,14 @@ internal class BetterPlayer(
                         event["event"] = "bufferingEnd"
                         eventSink.success(event)
                     }
+
                     Player.STATE_ENDED -> {
                         val event: MutableMap<String, Any?> = HashMap()
                         event["event"] = "completed"
                         event["key"] = key
                         eventSink.success(event)
                     }
+
                     Player.STATE_IDLE -> {
                         //no-op
                     }
