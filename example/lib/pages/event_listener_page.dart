@@ -27,6 +27,7 @@ class _EventListenerPageState extends State<EventListenerPage> {
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource);
     _betterPlayerController.addEventsListener(_handleEvent);
+
     super.initState();
   }
 
@@ -39,7 +40,7 @@ class _EventListenerPageState extends State<EventListenerPage> {
 
   void _handleEvent(BetterPlayerEvent event) {
     events.insert(0, event);
-
+    print("Better player event: ${event.betterPlayerEventType}");
     ///Used to refresh only list of events
     _eventStreamController.add(DateTime.now());
   }
